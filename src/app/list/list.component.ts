@@ -4,6 +4,7 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/skipWhile';
 import 'rxjs/add/operator/withLatestFrom';
 import 'rxjs/add/operator/zip';
+import 'rxjs/add/operator/concatAll';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { from } from 'rxjs/observable/from';
 import { Subject } from 'rxjs/Subject';
@@ -16,6 +17,7 @@ import { Organism } from '../shared/models/organism.interface';
 import { GalacticYearPipe } from '../shared/pipes/galactic-year.pipe';
 import { GenderPipe } from '../shared/pipes/gender.pipe';
 import { UnitsPipe } from '../shared/pipes/units.pipe';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
 	selector: 'app-list',
@@ -24,8 +26,8 @@ import { UnitsPipe } from '../shared/pipes/units.pipe';
 	providers: [PeopleService]
 })
 export class ListComponent implements OnInit {
-	private people: Organism[] = [];
-	private loaded: boolean = false;
+	private people: Observable<Organism[]>;
+	private loaded: boolean = true;
 
 	private querySubject = new Subject<string>();
 	private filterSubject = new BehaviorSubject<FilterAttribute[]>([]);
@@ -42,21 +44,11 @@ export class ListComponent implements OnInit {
 		/**
 		 * Subscribe to the peopleService to receive people
 		 */
-		this.peopleService.getAllPeople().subscribe(
-			(people) => {
-				console.log('Data received from Subject...');
-				console.table(people);
-				this.people = people;
-				/**
-				 * 	The BehaviorSubject receives an initial value of [] on first run
-				 * 	once we actually receive values we'll set the loaded flag.
-				 */
-				if (people.length > 0) {
-					this.loaded = true;
-				}
-			},
-			(error) => console.error(error)
-		);
+		this.people = this.peopleService.getAllPeople()
+			//.concatAll()
+			.reduce( (store, chunk) => {
+				return store.concat(chunk);
+			}, []);
 
 		this.peopleService
 			.getFilterOptions()
@@ -96,6 +88,22 @@ export class ListComponent implements OnInit {
 			(error) => console.error(error)
 		);
 	}
+
+	/*
+	.subscribe(
+			(people) => {
+				console.log('Data received from Subject...');
+				console.table(people);
+				this.people = this.people.concat(people);
+				/**
+				 * 	The BehaviorSubject receives an initial value of [] on first run
+				 * 	once we actually receive values we'll set the loaded flag.
+				 */
+			/*	
+			},
+			(error) => console.error(error)
+		)
+	*/
 
 	/**
 	 * Returns a subject with its values filtered

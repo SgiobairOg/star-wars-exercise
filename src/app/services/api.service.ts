@@ -52,12 +52,14 @@ export class ApiService {
 						? Observable.empty()
 						: this.getApiPage(r.next)
 			)
-			.reduce(
+			.map((response) => response.results;)
+			//.do((data) => console.log('Apis.GetAll People: ', data))
+			/*.reduce(
 				// Reduce the API responses into a single array of Organisms
 				(a: ReadonlyArray<Organism>, v: SwapiRes) =>
 					a.concat(v.results),
 				[]
-			);
+			)*;
 	}
 
 	/** 
@@ -73,7 +75,7 @@ export class ApiService {
 	 * Returns a boolean indicating whether the property passed is empty
 	 * @param {string} 
 	 * @returns {boolean}
-	 * */	
+	 * */
 	private isNil<A>(a: A): boolean {
 		return a === null || a === undefined;
 	}

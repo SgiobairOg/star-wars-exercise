@@ -9,6 +9,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/scan';
 import 'rxjs/add/operator/skipWhile';
 import 'rxjs/add/operator/toArray';
+import 'rxjs/add/operator/do';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -90,7 +91,7 @@ export class PeopleService {
 	public getAllPeople(): Observable<Organism[]> {
 		return this.allPeopleSubject
 			.asObservable()
-			.skipWhile((result) => result.length === 0);
+			.do((data) => console.log('Ps.GetAll People: ', data));
 	}
 
 	/**

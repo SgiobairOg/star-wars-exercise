@@ -118,15 +118,12 @@
 		</button>
 		<div *ngIf="!loaded" class="list__results-count">Loading...</div>
 
-		<div *ngIf="loaded && people.length === 0" class="list__results-count">No results...</div>
-
-		<div *ngIf="loaded && people.length > 0" class="list__results-count">Found {{people.length}} {{people.length > 1 ? 'matches' : 'match' }}</div>
 	</div>
 	<div class="list__results">
 
-		<div *ngIf="loaded && people.length > 0" class="list__results-list">
+		<div *ngIf="loaded" class="list__results-list">
 
-			<div class="list__item" *ngFor="let person of people">
+			<div class="list__item" *ngFor="let person of (people | async)">
 
 				<!-- HEADER -->
 				<div class="list__item-header">
